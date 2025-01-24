@@ -1,0 +1,9 @@
+:root {
+    --color-background: #f0f8ff;
+    --color-nested-container-background: #d0edf7;
+    --color-container-background: #ffff;
+    --color-accent: darkblue;
+    --color-link: var(--color-accent);
+    --color-text: black;
+    --color-text-inverted: white;
+}
