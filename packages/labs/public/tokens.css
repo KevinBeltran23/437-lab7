@@ -1,9 +1,26 @@
 :root {
-    --color-background: #f0f8ff;
-    --color-nested-container-background: #d0edf7;
-    --color-container-background: #ffff;
-    --color-accent: darkblue;
-    --color-link: var(--color-accent);
-    --color-text: black;
-    --color-text-inverted: white;
+  --color-background: #f0f8ff;
+  --color-nested-container-background: #d0edf7;
+  --color-container-background: #ffff;
+  --color-accent: darkblue;
+  --color-accent-inverted: darkred;
+  --color-link: var(--color-accent);
+  --color-text: black;
+  --color-text-inverted: white;
+}
+
+/* Dark Mode Overrides */
+body.dark-mode {
+  --color-background: rgb(26, 26, 26); /* Dark background for the body */
+  --color-nested-container-background: #272727; /* Slightly lighter for nested elements */
+  --color-container-background: #272727; /* Dark background for containers */
+  --color-accent: blue; /* Change accent to dark red for contrast */
+  --color-accent-inverted: lightblue; /* Dark blue accent for the light theme */
+  --color-link: var(--color-accent); /* Links should follow the accent color */
+  --color-text: white; /* Light text for contrast */
+  --color-text-inverted: black; /* Dark text when using light backgrounds */
+}
+
+a.active {
+  color: var(--color-accent-inverted); /* Use the CSS variable directly */
 }

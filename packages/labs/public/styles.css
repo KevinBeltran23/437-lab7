@@ -1,4 +1,4 @@
-@import url('tokens.css');
+@import url("tokens.css");
 
 body {
   background-color: var(--color-background);
@@ -6,12 +6,6 @@ body {
   font-family: "Courier New", Courier, monospace;
   padding: 0.625rem;
   font-size: 1.125rem;
-}
-
-header {
-  padding: 0.625rem 1.25rem 1.25rem 1.25rem;
-  background-color: var(--color-container-background);
-  box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.2);
 }
 
 main {
@@ -23,15 +17,6 @@ main {
 footer {
   font-size: 1rem;
   text-align: center;
-}
-
-nav {
-  display: flex;
-  align-items: baseline;
-  gap: 2rem;
-  background-color: var(--color-nested-container-background);
-  padding-left: 0.625rem;
-  margin-top: 0.625rem;
 }
 
 #contact {
