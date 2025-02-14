@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import PropTypes from "prop-types";
 import { nanoid } from "nanoid";
+import { GroceryPanel } from "./GroceryPanel";
 
 // Initial task list as objects
 const INITIAL_TASK_LIST = [
@@ -174,6 +175,7 @@ function App() {
         >
           <AddTaskForm onNewTask={addTask} />
         </Modal>
+        <GroceryPanel onAddTask={addTask} />
       </section>
     </main>
   );
