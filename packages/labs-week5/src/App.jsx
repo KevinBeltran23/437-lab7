@@ -22,15 +22,17 @@ Todo.propTypes = {
 
 AddTaskForm.propTypes = {
   onNewTask: PropTypes.func.isRequired,
+  onCloseRequested: PropTypes.func.isRequired,
 };
 
-function AddTaskForm({ onNewTask }) {
+function AddTaskForm({ onNewTask, onCloseRequested }) {
   const [taskName, setTaskName] = useState("");
 
   function handleSubmit() {
     if (!taskName.trim()) return;
     onNewTask(taskName);
     setTaskName("");
+    onCloseRequested();
   }
 
   return (
@@ -147,7 +149,7 @@ function App() {
 
   return (
     <main className="m-8">
-      <AddTaskForm onNewTask={addTask} />
+      <AddTaskForm onNewTask={addTask} onCloseRequested={closeModal} />
       <section className="flex flex-col gap-4">
         <h1 className="text-xl font-bold">To do</h1>
         <ul className="mt-4 space-y-4">
@@ -173,7 +175,7 @@ function App() {
           isOpen={isModalOpen}
           onCloseRequested={closeModal}
         >
-          <AddTaskForm onNewTask={addTask} />
+          <AddTaskForm onNewTask={addTask} onCloseRequested={closeModal} />
         </Modal>
         <GroceryPanel onAddTask={addTask} />
       </section>

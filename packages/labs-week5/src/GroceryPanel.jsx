@@ -1,53 +1,14 @@
 import { useState } from "react";
 import { Spinner } from "./Spinner.jsx";
-
-const MDN_URL =
-  "https://mdn.github.io/learning-area/javascript/apis/fetching-data/can-store/products.json";
-
-function delayMs(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
+import { useGroceryFetch } from "./useGroceryFetch";
 
 export function GroceryPanel({ onAddTask }) {
-  const [groceryData, setGroceryData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  async function fetchData(url) {
-    try {
-      setIsLoading(true);
-      setGroceryData([]);
-      console.log("Fetching data from " + url);
-
-      await delayMs(2000);
-
-      if (!url) {
-        setError(null);
-        return;
-      }
-
-      const response = await fetch(url);
-      if (!response.ok) throw new Error("Failed to fetch data");
-
-      const data = await response.json();
-      setGroceryData(data);
-      setError(null);
-    } catch (err) {
-      console.error("Error fetching data:", err);
-      setError(true);
-    } finally {
-      setIsLoading(false);
-    }
-  }
+  const [selectedSource, setSelectedSource] = useState("MDN");
+  
+  const { groceryData, isLoading, error } = useGroceryFetch(selectedSource);
 
   function handleDropdownChange(event) {
-    const selectedUrl = event.target.value;
-    setGroceryData([]);
-    if (selectedUrl) {
-      fetchData(selectedUrl !== "invalid" ? selectedUrl : "invalid-url");
-    } else {
-      setError(null);
-    }
+    setSelectedSource(event.target.value);
   }
 
   function handleAddTodoClicked(item) {
@@ -62,12 +23,13 @@ export function GroceryPanel({ onAddTask }) {
         Get prices from:
         <select
           className="border border-gray-300 p-1 rounded-sm disabled:opacity-50"
-          disabled={isLoading}
+          value={selectedSource}
           onChange={handleDropdownChange}
         >
-          <option value="">(None selected)</option>
-          <option value={MDN_URL}>MDN</option>
-          <option value="invalid">Who knows?</option>
+          <option value="MDN">MDN</option>
+          <option value="Liquor store">Liquor store</option>
+          <option value="Butcher">Butcher</option>
+          <option value="whoknows">Who knows?</option>
         </select>
         {isLoading && <Spinner />}
       </label>
