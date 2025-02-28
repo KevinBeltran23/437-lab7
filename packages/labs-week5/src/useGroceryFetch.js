@@ -44,5 +44,5 @@ export function useGroceryFetch(source) {
     };
   }, [source]);
 
-  return { groceryData, isLoading, error }; // Return the state variables
+  return { groceryData, isLoading, error };
 } 
