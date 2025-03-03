@@ -9,6 +9,9 @@
   "author": "",
   "license": "ISC",
   "workspaces": [
-  "packages/*"
-  ]
+    "packages/*"
+  ],
+  "dependencies": {
+    "mongodb": "^6.14.0"
+  }
 }
