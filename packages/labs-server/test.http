@@ -1,0 +1,29 @@
+### This is a comment
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{ "username": "newuser", "password": "password" }
+
+### Test Case 1: Missing username
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{ "password": "password" }
+
+### Test Case 2: Missing password
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{ "username": "newuser" }
+
+### Test Case 3: Successful registration
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{ "username": "newuser", "password": "password" }
+
+### Test Case 4: Username already taken
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{ "username": "newuser", "password": "anotherpassword" }
