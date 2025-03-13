@@ -20,45 +20,38 @@ export interface ImageDocument {
 export class ImageProvider {
   constructor(private readonly mongoClient: MongoClient) {}
  
-  async getAllImages(): Promise<ImageDocument[]> {
+  async getAllImages(authorId?: string): Promise<ImageDocument[]> {
     const collectionName = process.env.IMAGES_COLLECTION_NAME;
     if (!collectionName) {
       throw new Error("Missing IMAGES_COLLECTION_NAME from environment variables");
     }
    
     const collection = this.mongoClient.db().collection<ImageDocument>(collectionName);
-   
-    // Use aggregation pipeline to join with users collection
-    const images = await collection.aggregate<ImageDocument>([
-      {
-        $lookup: {
-          from: process.env.USERS_COLLECTION_NAME || "users",
-          localField: "author",
-          foreignField: "_id",
-          as: "authorDetails"
-        }
-      },
-      {
-        $addFields: {
-          author: {
-            $cond: {
-              if: { $gt: [{ $size: "$authorDetails" }, 0] },
-              then: {
-                _id: { $arrayElemAt: ["$authorDetails._id", 0] },
-                username: { $arrayElemAt: ["$authorDetails.username", 0] }
-              },
-              else: "$author"
-            }
-          }
-        }
-      },
-      {
-        $project: {
-          authorDetails: 0
-        }
-      }
-    ]).toArray();
-   
-    return images as ImageDocument[];
+    
+    // Create filter object based on whether authorId is provided
+    const filter = authorId ? { author: authorId } : {};
+    
+    // Use find() instead of aggregate()
+    const images = await collection.find(filter).toArray();
+    
+    return images;
+  }
+
+  async updateImageName(imageId: string, newName: string): Promise<number> {
+    const collectionName = process.env.IMAGES_COLLECTION_NAME;
+    if (!collectionName) {
+      throw new Error("Missing IMAGES_COLLECTION_NAME from environment variables");
+    }
+    
+    const collection = this.mongoClient.db().collection<ImageDocument>(collectionName);
+    
+    // Update the document with the specified id
+    const result = await collection.updateOne(
+      { _id: imageId },
+      { $set: { name: newName } }
+    );
+    
+    // Return the number of documents that matched the filter
+    return result.matchedCount;
   }
 }
