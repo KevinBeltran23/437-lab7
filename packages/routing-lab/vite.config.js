@@ -6,7 +6,8 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      "/api": "https://localhost:3000" // forwards all requests at localhost:5173/api/*
+      "/api": "http://localhost:3000", // forwards all requests at localhost:5173/api/*
+      "/auth": "http://localhost:3000"
     }
   }
 })

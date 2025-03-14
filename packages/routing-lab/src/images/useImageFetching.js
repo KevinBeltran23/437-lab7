@@ -6,16 +6,32 @@ import { useEffect, useState } from "react";
  * an array of ImageData.
  *
  * @param imageId {string} the image ID to fetch, or all of them if empty string
- * @returns {{isLoading: boolean, fetchedImages: ImageData[]}} fetch state and data
+ * @param authToken {string} the authentication token for API requests
+ * @returns {{isLoading: boolean, fetchedImages: ImageData[], error: string|null}} fetch state and data
  */
-export function useImageFetching(imageId) {
+export function useImageFetching(imageId, authToken) {
     const [isLoading, setIsLoading] = useState(true);
     const [fetchedImages, setFetchedImages] = useState([]);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        setIsLoading(true);
+        // Don't attempt to fetch if we don't have an auth token
+        if (!authToken) {
+            console.warn("No auth token provided. Skipping image fetch.");
+            setFetchedImages([]);
+            setIsLoading(false);
+            setError("Authentication required");
+            return;
+        }
 
-        fetch('/api/images')
+        setIsLoading(true);
+        setError(null);
+        
+        fetch('/api/images', {
+            headers: {
+                'Authorization': `Bearer ${authToken}`
+            }
+        })
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
@@ -29,9 +45,10 @@ export function useImageFetching(imageId) {
             })
             .catch(error => {
                 console.error("Error fetching images:", error);
+                setError(error.message);
                 setIsLoading(false);
             });
-    }, [imageId]);
+    }, [imageId, authToken]); // Add authToken to dependency array
 
-    return { isLoading, fetchedImages };
+    return { isLoading, fetchedImages, error };
 }

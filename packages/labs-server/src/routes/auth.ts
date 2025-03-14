@@ -98,7 +98,7 @@ export function registerAuthRoutes(app: express.Application, mongoClient: MongoC
 
             // Generate a JWT token
             const token = await generateAuthToken(username);
-            res.send({ token });
+            res.send({ token: token });
         } catch (error) {
             console.error("Error logging in:", error);
             res.status(500).json({ error: "Failed to login user" });
