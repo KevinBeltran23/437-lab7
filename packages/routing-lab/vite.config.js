@@ -7,7 +7,8 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": "http://localhost:3000", // forwards all requests at localhost:5173/api/*
-      "/auth": "http://localhost:3000"
+      "/auth": "http://localhost:3000",
+      "/uploads": "http://localhost:3000"
     }
   }
 })

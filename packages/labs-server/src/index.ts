@@ -14,6 +14,9 @@ const app = express();
 // Add middleware to parse JSON request bodies
 app.use(express.json());
 app.use(express.static(staticDir));
+// Serve uploaded images
+const uploadDir = process.env.IMAGE_UPLOAD_DIR || "uploads";
+app.use("/uploads", express.static(uploadDir));
 
 async function setUpServer() {
     try {

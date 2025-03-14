@@ -54,4 +54,19 @@ export class ImageProvider {
     // Return the number of documents that matched the filter
     return result.matchedCount;
   }
+
+  async createImage(imageData: ImageDocument): Promise<ImageDocument> {
+    const collectionName = process.env.IMAGES_COLLECTION_NAME;
+    if (!collectionName) {
+        throw new Error("Missing IMAGES_COLLECTION_NAME from environment variables");
+    }
+    
+    const collection = this.mongoClient.db().collection<ImageDocument>(collectionName);
+    
+    // Insert the new image document
+    await collection.insertOne(imageData);
+    
+    // Return the created document
+    return imageData;
+  }
 }

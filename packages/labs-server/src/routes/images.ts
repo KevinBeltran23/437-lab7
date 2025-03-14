@@ -1,6 +1,8 @@
 import express, { Request, Response } from "express";
 import { MongoClient } from "mongodb";
 import { ImageProvider } from "../imageProvider";
+import { handleImageFileErrors, imageMiddlewareFactory } from "../imageUploadMiddlware";
+import { verifyAuthToken } from "./auth";
 
 export function registerImageRoutes(app: express.Application, mongoClient: MongoClient) {
     // Define /api/images route
@@ -63,4 +65,59 @@ export function registerImageRoutes(app: express.Application, mongoClient: Mongo
             res.status(500).json({ error: "Failed to update image" });
         }
     });
+
+    app.post(
+        "/api/images",
+        verifyAuthToken,
+        imageMiddlewareFactory.single("image"),
+        handleImageFileErrors,
+        async (req: Request, res: Response) => {
+            try {
+                // Check if we have all required data
+                console.log("received upload request");
+                if (!req.file) {
+                    res.status(400).json({
+                        error: "Bad Request",
+                        message: "Missing required file"
+                    });
+                }
+    
+                // Check if name field exists
+                if (!req.body.name) {
+                    res.status(400).json({
+                        error: "Bad Request",
+                        message: "Missing required field: name"
+                    });
+                }
+
+                const username = res.locals.token.username;
+                if (!username) {
+                    res.status(401).json({
+                        error: "Unauthorized",
+                        message: "Cannot identify user"
+                    });
+                }
+    
+                // Create image document
+                const imageData = {
+                    _id: req.file!.filename,
+                    src: `/uploads/${req.file!.filename}`,
+                    name: req.body.name,
+                    author: username,
+                    likes: 0
+                };
+    
+                // Save to database using ImageProvider
+                const imageProvider = new ImageProvider(mongoClient);
+                const newImage = await imageProvider.createImage(imageData);
+    
+                // Return success response
+                res.status(201).json(newImage);
+                console.log(res.status);
+            } catch (error) {
+                console.error("Error handling image upload:", error);
+                res.status(500).json({ error: "Failed to process image upload" });
+            }
+        }
+    );
 }
