@@ -55,24 +55,40 @@ export function registerAuthRoutes(app: express.Application, mongoClient: MongoC
             const { username, password } = req.body;
 
             if (!username || !password) {
-                res.status(400).send({
-                    error: "Bad request",
+                res.status(400).json({
+                    success: false,
                     message: "Missing username or password"
                 });
+                return;
             }
 
-            const registrationSuccess = await credentialsProvider.registerUser(username, password);
-            if (!registrationSuccess) {
-                res.status(400).send({
-                    error: "Bad request",
-                    message: "Username already taken"
+            try {
+                const registrationSuccess = await credentialsProvider.registerUser(username, password);
+                if (!registrationSuccess) {
+                    res.status(409).json({
+                        success: false,
+                        message: "Username already taken"
+                    });
+                    return;
+                }
+
+                res.status(201).json({
+                    success: true,
+                    message: "User registered successfully"
+                });
+            } catch (authError) {
+                console.log("Registration service error:", authError);
+                res.status(400).json({
+                    success: false,
+                    message: authError instanceof Error ? authError.message : "Registration failed"
                 });
             }
-
-            res.status(201).send();
         } catch (error) {
-            console.error("Error signing up:", error);
-            res.status(500).json({ error: "Failed to register user" });
+            console.error("Unexpected registration error:", error);
+            res.status(500).json({
+                success: false,
+                message: "An error occurred during registration"
+            });
         }
     });
 
@@ -82,27 +98,44 @@ export function registerAuthRoutes(app: express.Application, mongoClient: MongoC
 
             // Check for missing username or password
             if (!username || !password) {
-                res.status(400).send({
-                    error: "Bad request",
+                res.status(400).json({
+                    success: false,
                     message: "Missing username or password"
                 });
+                return;
             }
 
-            // Verify the user's password
-            const isPasswordValid = await credentialsProvider.verifyPassword(username, password);
-            if (!isPasswordValid) {
-                res.status(401).send({
-                    error: "Unauthorized",
+            try {
+                // Verify the user's password
+                const isPasswordValid = await credentialsProvider.verifyPassword(username, password);
+                if (!isPasswordValid) {
+                    res.status(401).json({
+                        success: false,
+                        message: "Incorrect username or password"
+                    });
+                    return;
+                }
+
+                // Generate a JWT token
+                const token = await generateAuthToken(username);
+                res.json({
+                    success: true,
+                    message: "Login successful",
+                    token: token
+                });
+            } catch (authError) {
+                console.log("Login service error:", authError);
+                res.status(401).json({
+                    success: false,
                     message: "Incorrect username or password"
                 });
             }
-
-            // Generate a JWT token
-            const token = await generateAuthToken(username);
-            res.send({ token: token });
         } catch (error) {
-            console.error("Error logging in:", error);
-            res.status(500).json({ error: "Failed to login user" });
+            console.error("Unexpected login error:", error);
+            res.status(500).json({
+                success: false,
+                message: "An error occurred during login"
+            });
         }
     });
 }
