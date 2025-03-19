@@ -19,8 +19,10 @@ export function LoginPage({ setAuthToken }) {
             console.log("Authentication Token:", authToken);
             setAuthToken(authToken);
            
-            setFeedback({ type: "success", message: "Login successful! Redirecting..." });
-            setTimeout(() => navigate('/'), 1000); // Redirect after showing success message
+            setTimeout(() => {
+                setFeedback({ type: "success", message: "Login successful! Redirecting..." });
+                navigate('/');
+            }, 500); // Redirect after showing success message
            
             return { type: "success", message: "Login successful!" };
         } catch (error) {

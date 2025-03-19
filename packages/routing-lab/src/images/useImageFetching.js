@@ -14,6 +14,8 @@ export function useImageFetching(imageId, authToken) {
     const [fetchedImages, setFetchedImages] = useState([]);
     const [error, setError] = useState(null);
 
+    console.log("Auth Token:", authToken);
+
     useEffect(() => {
         // Don't attempt to fetch if we don't have an auth token
         if (!authToken) {
@@ -33,12 +35,14 @@ export function useImageFetching(imageId, authToken) {
             }
         })
             .then(response => {
+                console.log("Response status:", response.status);
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
                 return response.json();
             })
             .then(data => {
+                console.log("Fetched data:", data);
                 // Keep `_id` as-is
                 setFetchedImages(data);
                 setIsLoading(false);

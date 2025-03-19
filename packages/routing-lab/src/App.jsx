@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Homepage } from "./Homepage";
 import { AccountSettings } from "./AccountSettings";
 import { ImageGallery } from "./images/ImageGallery.jsx";
@@ -12,12 +12,21 @@ import { ProtectedRoute } from './ProtectedRoute';
 
 function App() {
     const [userName, setUserName] = useState("John Doe");
-    const [authToken, setAuthToken] = useState(null);
+    const [authToken, setAuthToken] = useState(() => localStorage.getItem("authToken"));
     const { isLoading, fetchedImages, error } = useImageFetching('', authToken);
+
+    useEffect(() => {
+        localStorage.setItem("authToken", authToken);
+    }, [authToken]);
+
+    const handleLogout = () => {
+        setAuthToken(null);
+        localStorage.removeItem("authToken");
+    };
 
     return (
         <Routes>
-            <Route path="/" element={<MainLayout />}>
+            <Route path="/" element={<MainLayout handleLogout={handleLogout} />}>
                 <Route index element={
                     <ProtectedRoute authToken={authToken}>
                         <Homepage userName={userName} />
