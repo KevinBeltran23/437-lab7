@@ -1,5 +1,5 @@
 import { Collection, MongoClient } from "mongodb";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 interface ICredentialsDocument {
     username: string;

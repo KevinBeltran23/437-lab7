@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import userCreds from '../schemas/userCredsSchema';
 import { Request, Response } from "express";
