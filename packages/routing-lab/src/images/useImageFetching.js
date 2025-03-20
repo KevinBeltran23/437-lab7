@@ -29,7 +29,7 @@ export function useImageFetching(imageId, authToken) {
         setIsLoading(true);
         setError(null);
         
-        fetch('/api/images', {
+        fetch('/labsApi/images', {
             headers: {
                 'Authorization': `Bearer ${authToken}`
             }

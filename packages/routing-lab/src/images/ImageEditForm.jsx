@@ -14,7 +14,7 @@ export function ImageEditForm() {
         setIsLoading(true);
 
         try {
-            const response = await fetch(`/api/images/${imageId}`, {
+            const response = await fetch(`/labsApi/images/${imageId}`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",

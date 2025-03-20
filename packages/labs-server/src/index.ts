@@ -1,14 +1,15 @@
 import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import { MongoClient } from "mongodb";
-import { registerImageRoutes } from "./routes/images";
-import { registerAuthRoutes, verifyAuthToken } from "./routes/auth";
+import { registerLabsImageRoutes } from "./labs/routes/images";
+import { registerLabsAuthRoutes, verifyLabsAuthToken } from "./labs/routes/auth";
 
 dotenv.config(); // Read the .env file in the current working directory, and load values into process.env.
 const PORT = process.env.PORT || 3000;
 const staticDir = process.env.STATIC_DIR || "public";
-const { MONGO_USER, MONGO_PWD, MONGO_CLUSTER, DB_NAME } = process.env;
-const connectionString = `mongodb+srv://${MONGO_USER}:${MONGO_PWD}@${MONGO_CLUSTER}/${DB_NAME}`;
+const { MONGO_USER, MONGO_PWD, MONGO_CLUSTER, DB_LABS_NAME, DB_NAME } = process.env;
+const labsConnectionString = `mongodb+srv://${MONGO_USER}:${MONGO_PWD}@${MONGO_CLUSTER}/${DB_LABS_NAME}`;
+const projectConnectionString = `mongodb+srv://${MONGO_USER}:${MONGO_PWD}@${MONGO_CLUSTER}/${DB_NAME}`;
 
 const app = express();
 // Add middleware to parse JSON request bodies
@@ -20,17 +21,17 @@ app.use("/uploads", express.static(uploadDir));
 
 async function setUpServer() {
     try {
-        const mongoClient = await MongoClient.connect(connectionString);
+        const mongoClient = await MongoClient.connect(labsConnectionString);
         const collectionInfos = await mongoClient.db().listCollections().toArray();
-        console.log("Collections in the database:", collectionInfos.map(collectionInfo => collectionInfo.name));
+        console.log("Collections in the database for labs:", collectionInfos.map(collectionInfo => collectionInfo.name));
 
         app.get("/hello", (req: Request, res: Response) => {
             res.send("Hello, World");
         });
 
-        registerAuthRoutes(app, mongoClient);
-        app.use("/api/*", verifyAuthToken);
-        registerImageRoutes(app, mongoClient);
+        registerLabsAuthRoutes(app, mongoClient);
+        app.use("/labsApi/*", verifyLabsAuthToken);
+        registerLabsImageRoutes(app, mongoClient);
        
         app.get("/images", (req: Request, res: Response) => {
             const options = {

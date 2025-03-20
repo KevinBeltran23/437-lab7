@@ -7,7 +7,7 @@ async function uploadImageAction(previousState, formData) {
     const authToken = localStorage.getItem("authToken");
     
     // Create a new request with the auth token
-    const response = await fetch("/api/images", {
+    const response = await fetch("/labsApi/images", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${authToken}`,

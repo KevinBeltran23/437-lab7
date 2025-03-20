@@ -5,12 +5,12 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 
 dotenv.config();
-const signatureKey = process.env.JWT_SECRET;
+const signatureKey = process.env.LABS_JWT_SECRET;
 if (!signatureKey) {
     throw new Error("Missing JWT_SECRET from env file");
 }
 
-export function verifyAuthToken(
+export function verifyLabsAuthToken(
     req: Request,
     res: Response,
     next: NextFunction // Call next() to run the next middleware or request handler
@@ -47,10 +47,10 @@ function generateAuthToken(username: string): Promise<string> {
     });
 }
 
-export function registerAuthRoutes(app: express.Application, mongoClient: MongoClient) {
+export function registerLabsAuthRoutes(app: express.Application, mongoClient: MongoClient) {
     const credentialsProvider = new CredentialsProvider(mongoClient);
 
-    app.post("/auth/register", async (req: Request, res: Response) => {
+    app.post("/labsApi/auth/register", async (req: Request, res: Response) => {
         try {
             const { username, password } = req.body;
 
@@ -92,7 +92,7 @@ export function registerAuthRoutes(app: express.Application, mongoClient: MongoC
         }
     });
 
-    app.post("/auth/login", async (req: Request, res: Response) => {
+    app.post("/labsApi/auth/login", async (req: Request, res: Response) => {
         try {
             const { username, password } = req.body;
 

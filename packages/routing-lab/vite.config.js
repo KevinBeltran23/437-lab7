@@ -6,9 +6,9 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      "/api": "http://localhost:3000", // forwards all requests at localhost:5173/api/*
-      "/auth": "http://localhost:3000",
-      "/uploads": "http://localhost:3000"
+      "/labsApi": "http://localhost:3000", // forwards all requests at localhost:5173/labsApi/*
+      "/labsApi/auth": "http://localhost:3000",
+      "/labsApi/uploads": "http://localhost:3000"
     }
   }
 })

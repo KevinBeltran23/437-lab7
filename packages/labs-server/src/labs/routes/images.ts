@@ -2,11 +2,11 @@ import express, { Request, Response } from "express";
 import { MongoClient } from "mongodb";
 import { ImageProvider } from "../imageProvider";
 import { handleImageFileErrors, imageMiddlewareFactory } from "../imageUploadMiddlware";
-import { verifyAuthToken } from "./auth";
+import { verifyLabsAuthToken } from "./auth";
 
-export function registerImageRoutes(app: express.Application, mongoClient: MongoClient) {
+export function registerLabsImageRoutes(app: express.Application, mongoClient: MongoClient) {
     // Define /api/images route
-    app.get("/api/images", async (req: Request, res: Response) => {
+    app.get("/labsApi/images", async (req: Request, res: Response) => {
         try {
             const imageProvider = new ImageProvider(mongoClient);
            
@@ -28,7 +28,7 @@ export function registerImageRoutes(app: express.Application, mongoClient: Mongo
     });
 
     // Define PATCH /api/images/:id route for updating image name
-    app.patch("/api/images/:id", async (req: Request, res: Response) => {
+    app.patch("/labsApi/images/:id", async (req: Request, res: Response) => {
         try {
             // Extract the image ID from the URL parameters
             const imageId = req.params.id;
@@ -67,8 +67,8 @@ export function registerImageRoutes(app: express.Application, mongoClient: Mongo
     });
 
     app.post(
-        "/api/images",
-        verifyAuthToken,
+        "/labsApi/images",
+        verifyLabsAuthToken,
         imageMiddlewareFactory.single("image"),
         handleImageFileErrors,
         async (req: Request, res: Response) => {
