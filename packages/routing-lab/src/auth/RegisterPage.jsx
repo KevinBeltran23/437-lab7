@@ -12,12 +12,12 @@ export function RegisterPage({ setAuthToken }) {
         try {
             setFeedback({ type: "loading", message: "Creating your account..." });
             
-            const response = await sendPostRequest('/labsApi/auth/register', { username, password });
+            const response = await sendPostRequest('/labsAuth/register', { username, password });
             
             // For registration, you need to make a second request to login
             // after successful registration since your API doesn't return a token on register
             try {
-                const loginResponse = await sendPostRequest('/labsApi/auth/login', { username, password });
+                const loginResponse = await sendPostRequest('/labsAuth/login', { username, password });
                 const result = await loginResponse.json();
                 const authToken = result.token;
                 

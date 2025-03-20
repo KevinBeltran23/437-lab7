@@ -1,29 +1,203 @@
-### This is a comment
-POST http://localhost:3000/auth/register
+@baseUrl = http://localhost:8000
+@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJpYXQiOjE3NDI0NDUxMzMsImV4cCI6MTc0MjUzMTUzM30.X0E8oUWRH_kMfCiRUvd7-zroTi82KR4fdkB7s1NQrOs
+
+### Health Check
+GET {{baseUrl}}/hello
+
+### 1. Register User Credentials
+POST {{baseUrl}}/auth/register
 Content-Type: application/json
 
-{ "username": "newuser", "password": "password" }
+{
+  "email": "hello@example.com",
+  "password": "password123"
+}
 
-### Test Case 1: Missing username
-POST http://localhost:3000/auth/register
+### 2. Login to get Auth Token
+# Run this after registration and copy the token to the @authToken variable above
+POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
-{ "password": "password" }
+{
+  "email": "hello@example.com",
+  "password": "password123"
+}
 
-### Test Case 2: Missing password
-POST http://localhost:3000/auth/register
+### 3. Create User Profile
+# This creates a full user profile associated with the email in the JWT token
+POST {{baseUrl}}/api/users/profile
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "email": "test@example.com",
+  "username": "testuser",
+  "bio": "Computer Science student looking for study partners",
+  "location": "San Francisco",
+  "institution": "Example University",
+  "fieldOfStudy": "Computer Science",
+  "yearLevel": "Junior",
+  "academicInterests": "AI, Machine Learning, Web Development",
+  "preferredStudyStyle": "work together",
+  "preferredStudyEnvironment": "library",
+  "preferredGroupSize": "small_group",
+  "subjectsLookingToStudy": ["Mathematics", "Computer Science", "Physics"],
+  "preferredStudyTime": "Evenings",
+  "timeZone": "UTC-8",
+  "studyFrequency": "weekly",
+  "weeklyAvailability": {
+    "monday": ["14:00-16:00", "18:00-20:00"],
+    "tuesday": ["10:00-12:00"],
+    "wednesday": ["14:00-16:00", "18:00-20:00"],
+    "thursday": ["10:00-12:00"],
+    "friday": ["14:00-16:00"],
+    "saturday": ["10:00-14:00"],
+    "sunday": []
+  },
+  "displaySettings": {
+    "darkMode": true,
+    "fontSize": "medium",
+    "colorScheme": "blue"
+  },
+  "notificationSettings": {
+    "email": true,
+    "push": true,
+    "studyRequests": true,
+    "messages": true,
+    "reminders": true
+  },
+  "privacySettings": {
+    "profileVisibility": "public",
+    "showLocation": "approximate",
+    "studyAvailabilityPublicity": "connections_only"
+  },
+  "securitySettings": {
+    "lastPasswordChange": "2023-07-15T00:00:00.000Z"
+  },
+  "accountSettings": {
+    "language": "en",
+    "emailVerified": true
+  }
+}
+
+### 4. Get User Profile
+# Retrieve the user profile using the JWT token
+GET {{baseUrl}}/api/users/profile
+Authorization: Bearer {{authToken}}
+
+### 5. Update User Profile (Partial Update)
+PUT {{baseUrl}}/api/users/profile
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "email": "test@example.com",
+  "bio": "Updated bio information - now studying AI and Machine Learning",
+  "location": "Seattle",
+  "preferredStudyEnvironment": "cafe"
+}
+
+### 5b. Update User Display Settings (Partial Update)
+PUT {{baseUrl}}/api/users/profile
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "email": "test@example.com",
+  "displaySettings": {
+    "darkMode": false,
+    "fontSize": "large"
+  },
+  "preferredStudyTime": "Mornings and Evenings" 
+}
+
+### 6. Find Study Partners
+GET {{baseUrl}}/api/users/study-partners?subjects=Mathematics,Computer%20Science&preferredStudyEnvironment=LIBRARY
+Authorization: Bearer {{authToken}}
+
+### 7. Create Another User for Testing
+# First register credentials
+POST {{baseUrl}}/auth/register
 Content-Type: application/json
 
-{ "username": "newuser" }
+{
+  "email": "partner@example.com",
+  "password": "password456"
+}
 
-### Test Case 3: Successful registration
-POST http://localhost:3000/auth/register
+### 8. Create a Post
+POST {{baseUrl}}/api/posts
 Content-Type: application/json
+Authorization: Bearer {{authToken}}
 
-{ "username": "newuser", "password": "password" }
+{
+  "email": "test@example.com",
+  "title": "Study Session: Advanced Algorithms",
+  "content": "Looking for partners to study advanced algorithms this weekend. Anyone interested?",
+  "tags": ["Computer Science", "Algorithms", "Study Group"],
+  "location": "University Library, Room 302",
+  "scheduledTime": "2023-11-10T14:00:00.000Z",
+  "duration": 120
+}
 
-### Test Case 4: Username already taken
-POST http://localhost:3000/auth/register
+### 9. Create Another Post
+POST {{baseUrl}}/api/posts
 Content-Type: application/json
+Authorization: Bearer {{authToken}}
 
-{ "username": "newuser", "password": "anotherpassword" }
+{
+  "email": "test@example.com",
+  "title": "Math Study Group",
+  "content": "Forming a group to study Calculus III. Meeting twice weekly.",
+  "tags": ["Mathematics", "Calculus", "Study Group"],
+  "location": "Online via Zoom",
+  "scheduledTime": "2023-11-12T18:00:00.000Z",
+  "duration": 90
+}
+
+### 10. Get All Posts
+GET {{baseUrl}}/api/posts
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+### 11. Get Posts by User Email
+GET {{baseUrl}}/api/posts/user/test@example.com
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+### 13. Update a Post
+# Replace {postId} with an actual post ID from a previous response
+PUT {{baseUrl}}/api/posts/67dbb2289e6b372098f7f272
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "email": "test@example.com",
+  "title": "UPDATED: Study Session: Advanced Algorithms",
+  "content": "Looking for 3-4 partners to study advanced algorithms this weekend. We'll focus on graph algorithms and dynamic programming.",
+  "tags": ["Computer Science", "Algorithms", "Study Group", "Graph Theory"],
+  "location": "University Library, Room 302",
+  "scheduledTime": "2023-11-10T15:00:00.000Z",
+  "duration": 150
+}
+
+### 14. Try to Update a Post with Wrong Email (Should Fail)
+# Replace {postId} with an actual post ID from a previous response
+PUT {{baseUrl}}/api/posts/{postId}
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "email": "wrong@example.com",
+  "title": "This update should fail",
+  "content": "This update should fail because the email doesn't match the authenticated user"
+}
+
+### 15. Delete a Post
+# Replace {postId} with an actual post ID from a previous response
+DELETE {{baseUrl}}/api/posts/{postId}
+Authorization: Bearer {{authToken}}
+
+### 16. Try to Access a Deleted Post (Should Return 404)
+# Use the same postId from the delete operation
+GET {{baseUrl}}/api/posts/{postId}

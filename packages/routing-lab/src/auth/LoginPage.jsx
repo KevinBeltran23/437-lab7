@@ -12,7 +12,7 @@ export function LoginPage({ setAuthToken }) {
         try {            
             setFeedback({ type: "loading", message: "Logging in..." });
             
-            const response = await sendPostRequest('/labsApi/auth/login', { username, password });
+            const response = await sendPostRequest('/labsAuth/login', { username, password });
             const result = await response.json();
             const authToken = result.token;
            

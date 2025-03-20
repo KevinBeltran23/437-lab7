@@ -2,7 +2,6 @@ import express, { Request, Response } from "express";
 import { MongoClient } from "mongodb";
 import { ImageProvider } from "../imageProvider";
 import { handleImageFileErrors, imageMiddlewareFactory } from "../imageUploadMiddlware";
-import { verifyLabsAuthToken } from "./auth";
 
 export function registerLabsImageRoutes(app: express.Application, mongoClient: MongoClient) {
     // Define /api/images route
@@ -68,7 +67,6 @@ export function registerLabsImageRoutes(app: express.Application, mongoClient: M
 
     app.post(
         "/labsApi/images",
-        verifyLabsAuthToken,
         imageMiddlewareFactory.single("image"),
         handleImageFileErrors,
         async (req: Request, res: Response) => {

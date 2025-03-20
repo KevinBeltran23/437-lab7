@@ -1,23 +1,29 @@
 import express, { Request, Response } from "express";
 import dotenv from "dotenv";
+import cors from 'cors';
 import { MongoClient } from "mongodb";
 import { registerLabsImageRoutes } from "./labs/routes/images";
-import { registerLabsAuthRoutes, verifyLabsAuthToken } from "./labs/routes/auth";
+import { registerLabsAuthRoutes } from "./labs/routes/auth";
+import { registerAuthRoutes } from "./project/routes/auth";
+import { registerUsersRoutes } from "./project/routes/users";
+import { registerPostsRoutes } from "./project/routes/posts";
+import { connectMongoose } from "./project/config/db";
+import { verifyAuthToken } from "./project/services/authServices";
+import { verifyLabsAuthToken } from "./labs/routes/auth";
 
 dotenv.config(); // Read the .env file in the current working directory, and load values into process.env.
 const PORT = process.env.PORT || 3000;
 const staticDir = process.env.STATIC_DIR || "public";
-const { MONGO_USER, MONGO_PWD, MONGO_CLUSTER, DB_LABS_NAME, DB_NAME } = process.env;
+const { MONGO_USER, MONGO_PWD, MONGO_CLUSTER, DB_LABS_NAME } = process.env;
 const labsConnectionString = `mongodb+srv://${MONGO_USER}:${MONGO_PWD}@${MONGO_CLUSTER}/${DB_LABS_NAME}`;
-const projectConnectionString = `mongodb+srv://${MONGO_USER}:${MONGO_PWD}@${MONGO_CLUSTER}/${DB_NAME}`;
 
 const app = express();
-// Add middleware to parse JSON request bodies
 app.use(express.json());
 app.use(express.static(staticDir));
-// Serve uploaded images
 const uploadDir = process.env.IMAGE_UPLOAD_DIR || "uploads";
 app.use("/uploads", express.static(uploadDir));
+app.use(cors()); 
+
 
 async function setUpServer() {
     try {
@@ -29,9 +35,17 @@ async function setUpServer() {
             res.send("Hello, World");
         });
 
+        // my project stuff 
+        await connectMongoose();
+
         registerLabsAuthRoutes(app, mongoClient);
         app.use("/labsApi/*", verifyLabsAuthToken);
         registerLabsImageRoutes(app, mongoClient);
+        // project routes
+        registerAuthRoutes(app);
+        app.use("/api/*", verifyAuthToken);
+        registerUsersRoutes(app);
+        registerPostsRoutes(app);
        
         app.get("/images", (req: Request, res: Response) => {
             const options = {
@@ -67,7 +81,8 @@ async function setUpServer() {
             console.log(`Server running at http://localhost:${PORT}`);
         });
     } catch (error) {
-        console.error("Error connecting to MongoDB:", error);
+        console.error("Error setting up server:", error);
+        process.exit(1);
     }
 }
 

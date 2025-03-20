@@ -8,7 +8,9 @@ export default defineConfig({
     proxy: {
       "/labsApi": "http://localhost:3000", // forwards all requests at localhost:5173/labsApi/*
       "/labsApi/auth": "http://localhost:3000",
-      "/labsApi/uploads": "http://localhost:3000"
+      "/labsApi/uploads": "http://localhost:3000",
+      "/labsAuth": "http://localhost:3000",
+      "/labsApi/images": "http://localhost:3000",
     }
   }
 })

@@ -7,7 +7,7 @@ import dotenv from "dotenv";
 dotenv.config();
 const signatureKey = process.env.LABS_JWT_SECRET;
 if (!signatureKey) {
-    throw new Error("Missing JWT_SECRET from env file");
+    throw new Error("Missing LABS_JWT_SECRET from env file");
 }
 
 export function verifyLabsAuthToken(
@@ -50,7 +50,7 @@ function generateAuthToken(username: string): Promise<string> {
 export function registerLabsAuthRoutes(app: express.Application, mongoClient: MongoClient) {
     const credentialsProvider = new CredentialsProvider(mongoClient);
 
-    app.post("/labsApi/auth/register", async (req: Request, res: Response) => {
+    app.post("/labsAuth/register", async (req: Request, res: Response) => {
         try {
             const { username, password } = req.body;
 
@@ -92,7 +92,7 @@ export function registerLabsAuthRoutes(app: express.Application, mongoClient: Mo
         }
     });
 
-    app.post("/labsApi/auth/login", async (req: Request, res: Response) => {
+    app.post("/labsAuth/login", async (req: Request, res: Response) => {
         try {
             const { username, password } = req.body;
 
