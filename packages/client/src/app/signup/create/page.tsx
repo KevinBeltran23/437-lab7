@@ -226,7 +226,7 @@ export default function CreateProfile() {
       }
       
       // Redirect to feed page after successful profile creation
-      window.location.replace('/studdybuddy/feed');
+      window.location.replace('/studybuddy/feed');
     } catch (error) {
       // This should rarely happen with the new implementation
       console.error('Unexpected error creating profile:', error);
